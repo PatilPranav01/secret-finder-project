@@ -1,13 +1,5 @@
-// Save this file as: solve.js
 const fs = require('fs');
 
-/**
- * Decodes a string value from a given base into a BigInt.
- * Handles bases from 2 to 36.
- * @param {string} valueStr The string representation of the number (e.g., "111", "aed7").
- * @param {number} base The numerical base (e.g., 2, 16).
- * @returns {BigInt} The decoded number as a BigInt.
- */
 function decodeValue(valueStr, base) {
     const bigBase = BigInt(base);
     let result = 0n;
@@ -23,11 +15,6 @@ function decodeValue(valueStr, base) {
     return result;
 }
 
-/**
- * Reconstructs the secret (the constant term 'c') from a list of k shares.
- * @param {Array<Object>} kShares A list of exactly k shares, each {x, y}.
- * @returns {BigInt} The reconstructed secret.
- */
 function reconstructSecret(kShares) {
     let secret = 0n;
 
@@ -45,7 +32,6 @@ function reconstructSecret(kShares) {
 
         const termNumerator = currentShare.y * numerator;
         if (termNumerator % denominator !== 0n) {
-            // This case should not happen if the problem guarantees valid shares.
             throw new Error("Inconsistent shares provided. Cannot solve for an integer secret.");
         }
         secret += termNumerator / denominator;
@@ -53,10 +39,6 @@ function reconstructSecret(kShares) {
     return secret;
 }
 
-/**
- * Reads a single JSON test case file, processes it, and finds the secret.
- * @param {string} filePath The path to the JSON file.
- */
 function solveForFile(filePath) {
     try {
         console.log(`\n--- Processing: ${filePath} ---`);
@@ -66,7 +48,6 @@ function solveForFile(filePath) {
         const k = data.keys.k;
         const shares = [];
 
-        // Iterate over the keys of the JSON object to find the shares
         for (const key in data) {
             if (key !== "keys") {
                 const x = BigInt(key);
@@ -80,7 +61,6 @@ function solveForFile(filePath) {
             return;
         }
 
-        // As per the problem, we only need k shares to solve. We'll take the first k.
         const sharesToUse = shares.slice(0, k);
 
         const secret = reconstructSecret(sharesToUse);
@@ -91,12 +71,8 @@ function solveForFile(filePath) {
     }
 }
 
-/**
- * Main function to run the script.
- * It can process multiple file paths passed as command-line arguments.
- */
 function main() {
-    const filePaths = process.argv.slice(2); // Get all arguments after 'node' and 'solve.js'
+    const filePaths = process.argv.slice(2);
 
     if (filePaths.length === 0) {
         console.error('USAGE: node solve.js <file1.json> <file2.json> ...');
